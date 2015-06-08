@@ -9,6 +9,7 @@
 #import "WXController.h"
 #include <LBBlurredImage/UIImageView+LBBlurredImage.h>
 #include "WXManager.h"
+#include <MobClick.h>
 
 @interface WXController ()
 
@@ -166,6 +167,18 @@
     [[WXManager sharedManager] findCurrentLocation];
 }
 
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [MobClick beginLogPageView:@"MainPage"];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [MobClick endLogPageView:@"MainPage"];
+}
+
+
+
 - (UIStatusBarStyle)preferredStatusBarStyle{
     return UIStatusBarStyleLightContent;
 }
@@ -276,6 +289,7 @@
     NSInteger cellCount = [self tableView:tableView numberOfRowsInSection:indexPath.section];
     return self.screenHeight / (CGFloat)cellCount;
 }
+
 
 #pragma mark - UIScrollViewDelegate
 

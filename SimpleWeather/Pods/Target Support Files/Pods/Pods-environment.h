@@ -60,3 +60,9 @@
 #define COCOAPODS_VERSION_MINOR_TSMessages 9
 #define COCOAPODS_VERSION_PATCH_TSMessages 12
 
+// UMengAnalytics
+#define COCOAPODS_POD_AVAILABLE_UMengAnalytics
+#define COCOAPODS_VERSION_MAJOR_UMengAnalytics 3
+#define COCOAPODS_VERSION_MINOR_UMengAnalytics 5
+#define COCOAPODS_VERSION_PATCH_UMengAnalytics 8
+

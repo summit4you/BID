@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import <MobClick.h>
 
 @interface AppDelegate ()
 
@@ -16,6 +17,12 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    // umeng setting
+    [MobClick startWithAppkey:@"557161b367e58e23e10033e6" reportPolicy:BATCH channelId:@"fir.im"];
+    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBunleShortVersionString"];
+    [MobClick setAppVersion:version];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.window.rootViewController = [ [WXController alloc] init];
