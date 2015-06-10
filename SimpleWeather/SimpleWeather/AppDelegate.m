@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import <MobClick.h>
+#import <ShareSDK/ShareSDK.h>
+#import "WXApi.h"
 
 @interface AppDelegate ()
 
@@ -23,6 +25,12 @@
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBunleShortVersionString"];
     [MobClick setAppVersion:version];
     
+    // share sdk
+    [ShareSDK registerApp:@"80d1471cb1e8"];
+    
+    // wechat
+    [ShareSDK connectWeChatWithAppId:@"wx081087830b2fd700" appSecret:@"3df40fca9f52f997c960c07efd5e4c41" wechatCls:[WXApi class]];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.window.rootViewController = [ [WXController alloc] init];
@@ -30,6 +38,18 @@
     [self.window makeKeyAndVisible];
     [TSMessage setDefaultViewController: self.window.rootViewController];
     return YES;
+}
+
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+{
+    return  [ShareSDK handleOpenURL:url wxDelegate:self];
+}
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation
+{
+    return [ShareSDK handleOpenURL:url sourceApplication:sourceApplication annotation:annotation wxDelegate:self];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

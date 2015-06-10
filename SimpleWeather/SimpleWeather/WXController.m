@@ -10,6 +10,7 @@
 #include <LBBlurredImage/UIImageView+LBBlurredImage.h>
 #include "WXManager.h"
 #include <MobClick.h>
+#import <ShareSDK/ShareSDK.h>
 
 @interface WXController ()
 
@@ -165,6 +166,70 @@
                             // 4 
                             deliverOn:RACScheduler.mainThreadScheduler];
     [[WXManager sharedManager] findCurrentLocation];
+    
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressed:)];
+    [self.view addGestureRecognizer:longPress];
+    longPress.allowableMovement = NO;
+    longPress.minimumPressDuration = 0.5;
+    
+}
+
+-(void)longPressed:(id)sender{
+    if ([(UILongPressGestureRecognizer *)sender state] == UIGestureRecognizerStateBegan)
+    {
+        //NSLog(@"Hello long press!");
+        WXCondition *newCondition=[WXManager sharedManager].currentCondition;
+        
+        NSString *imagePath = [[NSBundle mainBundle] pathForResource:@"icon-120" ofType:@"png"];
+        
+        NSString *content = [NSString stringWithFormat:@"我正在 %@ , 当前温度%.0f° / %.0f°, %@ 。App下载（仅支持越狱IOS）https://fir.im/fs6z", [newCondition.locationName capitalizedString],newCondition.tempHigh.floatValue, newCondition.tempLow.floatValue, [((WXWeather *)[[newCondition weather] objectAtIndex:0]).condition capitalizedString]];
+       
+        //1、构造分享内容
+        id<ISSContent> publishContent = [ShareSDK content:content
+                                           defaultContent:content
+                                                    image:[ShareSDK imageWithPath:imagePath]
+                                                    title:@"SimpleWeather"
+                                                      url:@"http://summit4you.github.io"
+                                              description:nil
+                                                mediaType:SSPublishContentMediaTypeText];
+        
+        [publishContent addWeixinFavUnitWithType:INHERIT_VALUE content:INHERIT_VALUE title:@"SimpleWeather" url:INHERIT_VALUE thumbImage:INHERIT_VALUE image:INHERIT_VALUE musicFileUrl:nil extInfo:nil fileData:nil emoticonData:nil];
+        
+        //1+创建弹出菜单容器（iPad必要）
+        id<ISSContainer> container = [ShareSDK container];
+        //[container setIPadContainerWithView:sender arrowDirect:UIPopoverArrowDirectionUp];
+        
+        //2、弹出分享菜单
+        [ShareSDK showShareActionSheet:container
+                             shareList:nil
+                               content:publishContent
+                         statusBarTips:YES
+                           authOptions:nil
+                          shareOptions:nil
+                                result:^(ShareType type, SSResponseState state, id<ISSPlatformShareInfo> statusInfo, id<ICMErrorInfo> error, BOOL end) {
+                                    
+                                    //可以根据回调提示用户。
+                                    if (state == SSResponseStateSuccess)
+                                    {
+                                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"分享成功"
+                                                                                        message:nil
+                                                                                       delegate:self
+                                                                              cancelButtonTitle:@"OK"
+                                                                              otherButtonTitles:nil, nil];
+                                        [alert show];
+                                    }
+                                    else if (state == SSResponseStateFail)
+                                    {
+                                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"分享失败"
+                                                                                        message:[NSString stringWithFormat:@"失败描述：%@",[error errorDescription]]
+                                                                                       delegate:self
+                                                                              cancelButtonTitle:@"OK"
+                                                                              otherButtonTitles:nil, nil];
+                                        [alert show];
+                                    }
+                                }];
+    
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated{
